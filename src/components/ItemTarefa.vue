@@ -1,78 +1,139 @@
 <script setup lang="ts">
-interface Tarefa {
-  id: number
-  texto: string
-  concluida: boolean
+
+interface Tarefa{
+    id:number
+    texto:string
+    concluida:boolean
 }
 
 defineProps<{
-  tarefa: Tarefa
+    tarefa:Tarefa
 }>()
 
 const emit = defineEmits<{
-  (e: 'remover', id: number): void
+    (e:'remover',id:number):void
 }>()
+
 </script>
 
 <template>
-  <li class="item">
 
-    <label class="texto">
+<li class="item">
 
-      <input
-        type="checkbox"
-        v-model="tarefa.concluida"
-      />
+    <div class="ladoEsquerdo">
 
-      <span :class="{ concluida: tarefa.concluida }">
-        {{ tarefa.texto }}
-      </span>
+        <input
+            type="checkbox"
+            v-model="tarefa.concluida"
+        >
 
-    </label>
+        <span
+            :class="{concluida:tarefa.concluida}"
+        >
+
+            {{ tarefa.texto }}
+
+        </span>
+
+    </div>
 
     <button
-      class="btnExcluir"
-      @click="emit('remover', tarefa.id)"
+        class="btnExcluir"
+        @click="emit('remover', tarefa.id)"
     >
-      🗑
+
+        🗑
+
     </button>
 
-  </li>
+</li>
+
 </template>
 
 <style scoped>
 
 .item{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:10px;
-  border-bottom:1px solid #ddd;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    padding:12px;
+
+    margin-bottom:10px;
+
+    border-radius:10px;
+
+    background:#f8f8f8;
+
 }
 
-.texto{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  font-size:16px;
+.item:hover{
+
+    background:#ececec;
+
+}
+
+.ladoEsquerdo{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+}
+
+input{
+
+    width:18px;
+
+    height:18px;
+
+    cursor:pointer;
+
+}
+
+span{
+
+    font-size:16px;
+
 }
 
 .concluida{
-  text-decoration:line-through;
-  color:#888;
+
+    text-decoration:line-through;
+
+    color:gray;
+
 }
 
 .btnExcluir{
-  background:#e74c3c;
-  color:white;
-  border:none;
-  border-radius:6px;
-  padding:6px 10px;
-  cursor:pointer;
+
+    background:#ff5c5c;
+
+    color:white;
+
+    border:none;
+
+    border-radius:8px;
+
+    width:40px;
+
+    height:40px;
+
+    cursor:pointer;
+
+    font-size:18px;
+
 }
 
 .btnExcluir:hover{
-  background:#c0392b;
+
+    background:#d63c3c;
+
 }
 
 </style>
