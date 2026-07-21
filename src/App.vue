@@ -1,65 +1,69 @@
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
-import ListaTarefas from './components/ListaTarefas.vue'
+import { ref, watch, onMounted } from "vue";
+import ListaTarefas from "./components/ListaTarefas.vue";
 
 interface Tarefa {
-  id: number
-  texto: string
-  concluida: boolean
+  id: number;
+  texto: string;
+  concluida: boolean;
 }
 
 interface Lista {
-  id: number
-  titulo: string
-  tarefas: Tarefa[]
+  id: number;
+  titulo: string;
+  tarefas: Tarefa[];
 }
 
-const listas = ref<Lista[]>([])
-const tituloLista = ref("")
+const listas = ref<Lista[]>([]);
+const tituloLista = ref("");
 
 function criarLista() {
-  if (tituloLista.value.trim() === "") return
+  if (tituloLista.value.trim() === "") return;
 
   listas.value.push({
     id: Date.now(),
     titulo: tituloLista.value,
     tarefas: []
-  })
+  });
 
-  tituloLista.value = ""
+  tituloLista.value = "";
 }
 
 function excluirLista(id: number) {
-  listas.value = listas.value.filter(lista => lista.id !== id)
+  listas.value = listas.value.filter(lista => lista.id !== id);
 }
 
 onMounted(() => {
-  const dados = localStorage.getItem("listas")
+  const dados = localStorage.getItem("listas");
 
   if (dados) {
-    listas.value = JSON.parse(dados)
+    listas.value = JSON.parse(dados);
   }
-})
+});
 
 watch(
   listas,
   () => {
-    localStorage.setItem("listas", JSON.stringify(listas.value))
+    localStorage.setItem("listas", JSON.stringify(listas.value));
   },
   { deep: true }
-)
+);
 </script>
 
 <template>
   <div class="container">
 
-    <h1>📝 Minhas Listas de Tarefas</h1>
+    <h1>📋 Organizador de Tarefas</h1>
+
+    <p class="subtitulo">
+      Crie várias listas e organize suas tarefas.
+    </p>
 
     <div class="nova-lista">
 
       <input
         v-model="tituloLista"
-        placeholder="Digite o título da lista"
+        placeholder="Nome da lista"
       />
 
       <button @click="criarLista">
@@ -81,48 +85,87 @@ watch(
 <style scoped>
 
 .container{
-  max-width:1000px;
-  margin:auto;
-  padding:30px;
+
+    max-width:1100px;
+
+    margin:auto;
+
 }
 
 h1{
-  text-align:center;
-  margin-bottom:30px;
-  color:#2c3e50;
+
+    color:white;
+
+    text-align:center;
+
+    margin-bottom:10px;
+
+}
+
+.subtitulo{
+
+    text-align:center;
+
+    color:white;
+
+    margin-bottom:35px;
+
 }
 
 .nova-lista{
-  display:flex;
-  gap:10px;
-  margin-bottom:30px;
+
+    display:flex;
+
+    gap:15px;
+
+    margin-bottom:30px;
+
 }
 
-input{
-  flex:1;
-  padding:12px;
-  border:1px solid #ccc;
-  border-radius:8px;
-  font-size:16px;
+.nova-lista input{
+
+    flex:1;
+
+    padding:14px;
+
+    border:none;
+
+    border-radius:10px;
+
+    font-size:16px;
+
 }
 
-button{
-  padding:12px 20px;
-  background:#42b883;
-  color:white;
-  border:none;
-  border-radius:8px;
-  cursor:pointer;
-  font-size:16px;
-  transition:.3s;
+.nova-lista button{
+
+    background:#35495e;
+
+    color:white;
+
+    border:none;
+
+    border-radius:10px;
+
+    padding:14px 20px;
+
+    cursor:pointer;
+
 }
 
-button:hover{
-  background:#36966d;
+.nova-lista button:hover{
+
+    background:#243342;
+
 }
 
-body{
-  background:#f5f7fa;
+@media(max-width:700px){
+
+.nova-lista{
+
+flex-direction:column;
+
+}
+
 }
 
 </style>
