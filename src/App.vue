@@ -1,89 +1,128 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import HelloWorld from './components/HelloWorld.vue'
+import { ref, watch, onMounted } from 'vue'
+import ListaTarefas from './components/ListaTarefas.vue'
 
-interface Item {
+interface Tarefa {
   id: number
   texto: string
+  concluida: boolean
 }
 
-const vetor = ref<Item[]>([])
-const texto = ref("")
-let proximoId = 1
+interface Lista {
+  id: number
+  titulo: string
+  tarefas: Tarefa[]
+}
 
-function adicionarVue() {
-  if (texto.value.trim() === "") return
+const listas = ref<Lista[]>([])
+const tituloLista = ref("")
 
-  vetor.value.push({
-    id: proximoId++,
-    texto: texto.value
+function criarLista() {
+  if (tituloLista.value.trim() === "") return
+
+  listas.value.push({
+    id: Date.now(),
+    titulo: tituloLista.value,
+    tarefas: []
   })
 
-  texto.value = ""
+  tituloLista.value = ""
 }
+
+function excluirLista(id: number) {
+  listas.value = listas.value.filter(lista => lista.id !== id)
+}
+
+onMounted(() => {
+  const dados = localStorage.getItem("listas")
+
+  if (dados) {
+    listas.value = JSON.parse(dados)
+  }
+})
+
+watch(
+  listas,
+  () => {
+    localStorage.setItem("listas", JSON.stringify(listas.value))
+  },
+  { deep: true }
+)
 </script>
 
 <template>
-  <header v-for="item in vetor" :key="item.id">
-    <img
-      alt="Vue logo"
-      class="logo"
-      src="./assets/logo.svg"
-      width="125"
-      height="125"
-    />
+  <div class="container">
 
-    <div class="wrapper">
-      <HelloWorld :msg="item.texto" />
+    <h1>📝 Minhas Listas de Tarefas</h1>
+
+    <div class="nova-lista">
+
+      <input
+        v-model="tituloLista"
+        placeholder="Digite o título da lista"
+      />
+
+      <button @click="criarLista">
+        Criar Lista
+      </button>
+
     </div>
-  </header>
 
-  <main>
-    <input
-      v-model="texto"
-      placeholder="Digite uma mensagem"
+    <ListaTarefas
+      v-for="lista in listas"
+      :key="lista.id"
+      :lista="lista"
+      @excluir="excluirLista"
     />
 
-    <button @click="adicionarVue">
-      Novo Vue
-    </button>
-  </main>
+  </div>
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
+
+.container{
+  max-width:1000px;
+  margin:auto;
+  padding:30px;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+h1{
+  text-align:center;
+  margin-bottom:30px;
+  color:#2c3e50;
 }
 
-input {
-  margin-right: 10px;
-  padding: 8px;
+.nova-lista{
+  display:flex;
+  gap:10px;
+  margin-bottom:30px;
 }
 
-button {
-  padding: 8px 12px;
+input{
+  flex:1;
+  padding:12px;
+  border:1px solid #ccc;
+  border-radius:8px;
+  font-size:16px;
 }
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+button{
+  padding:12px 20px;
+  background:#42b883;
+  color:white;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  font-size:16px;
+  transition:.3s;
 }
+
+button:hover{
+  background:#36966d;
+}
+
+body{
+  background:#f5f7fa;
+}
+
 </style>
