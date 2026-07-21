@@ -1,71 +1,74 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref } from "vue";
+import ItemTarefa from "./ItemTarefa.vue";
 
 interface Tarefa {
-  id: number
-  texto: string
-  concluida: boolean
+  id: number;
+  texto: string;
+  concluida: boolean;
 }
 
 interface Lista {
-  id: number
-  titulo: string
-  tarefas: Tarefa[]
+  id: number;
+  titulo: string;
+  tarefas: Tarefa[];
 }
 
 const props = defineProps<{
-  lista: Lista
-}>()
+  lista: Lista;
+}>();
 
 const emit = defineEmits<{
-  (e: 'excluir', id: number): void
-}>()
+  (e: "excluir", id: number): void;
+}>();
 
-const novaTarefa = ref("")
+const novaTarefa = ref("");
 
 function adicionarTarefa() {
-  if (novaTarefa.value.trim() === "") return
+  if (novaTarefa.value.trim() === "") return;
 
   props.lista.tarefas.push({
     id: Date.now(),
     texto: novaTarefa.value,
     concluida: false
-  })
+  });
 
-  novaTarefa.value = ""
+  novaTarefa.value = "";
 }
 
 function removerTarefa(id: number) {
   props.lista.tarefas = props.lista.tarefas.filter(
     tarefa => tarefa.id !== id
-  )
+  );
 }
 
-function tarefasConcluidas() {
-  return props.lista.tarefas.filter(t => t.concluida).length
-}
+const totalConcluidas = () => {
+  return props.lista.tarefas.filter(
+    tarefa => tarefa.concluida
+  ).length;
+};
 </script>
 
 <template>
 
 <div class="card">
 
-    <div class="topo">
+    <div class="cabecalho">
 
         <h2>
-            {{ lista.titulo }}
+            📋 {{ lista.titulo }}
         </h2>
 
         <button
             class="btnExcluirLista"
             @click="emit('excluir', lista.id)"
         >
-            🗑
+            Excluir Lista
         </button>
 
     </div>
 
-    <div class="novaTarefa">
+    <div class="nova">
 
         <input
             v-model="novaTarefa"
@@ -74,45 +77,35 @@ function tarefasConcluidas() {
         >
 
         <button @click="adicionarTarefa">
+
             Adicionar
+
         </button>
 
     </div>
 
     <p class="contador">
-        {{ tarefasConcluidas() }} de {{ lista.tarefas.length }} concluídas
+
+        {{ totalConcluidas() }}
+        de
+        {{ lista.tarefas.length }}
+        concluídas
+
     </p>
 
     <ul>
 
-        <li
+        <ItemTarefa
+
             v-for="tarefa in lista.tarefas"
+
             :key="tarefa.id"
-        >
 
-            <label>
+            :tarefa="tarefa"
 
-                <input
-                    type="checkbox"
-                    v-model="tarefa.concluida"
-                >
+            @remover="removerTarefa"
 
-                <span
-                    :class="{feito:tarefa.concluida}"
-                >
-                    {{ tarefa.texto }}
-                </span>
-
-            </label>
-
-            <button
-                class="btnRemover"
-                @click="removerTarefa(tarefa.id)"
-            >
-                ❌
-            </button>
-
-        </li>
+        />
 
     </ul>
 
@@ -126,17 +119,25 @@ function tarefasConcluidas() {
 
     background:white;
 
-    border-radius:15px;
+    border-radius:18px;
 
-    padding:20px;
+    padding:25px;
 
-    margin-bottom:25px;
+    margin-bottom:30px;
 
-    box-shadow:0 4px 12px rgba(0,0,0,.1);
+    box-shadow:0 10px 25px rgba(0,0,0,.15);
+
+    transition:.3s;
 
 }
 
-.topo{
+.card:hover{
+
+    transform:translateY(-4px);
+
+}
+
+.cabecalho{
 
     display:flex;
 
@@ -148,93 +149,9 @@ function tarefasConcluidas() {
 
 }
 
-.topo h2{
+.cabecalho h2{
 
-    color:#2c3e50;
-
-}
-
-.novaTarefa{
-
-    display:flex;
-
-    gap:10px;
-
-    margin-bottom:15px;
-
-}
-
-.novaTarefa input{
-
-    flex:1;
-
-    padding:10px;
-
-    border-radius:8px;
-
-    border:1px solid #ccc;
-
-}
-
-.novaTarefa button{
-
-    background:#42b883;
-
-    color:white;
-
-    border:none;
-
-    padding:10px 18px;
-
-    border-radius:8px;
-
-    cursor:pointer;
-
-}
-
-.novaTarefa button:hover{
-
-    background:#36966d;
-
-}
-
-ul{
-
-    list-style:none;
-
-    padding:0;
-
-}
-
-li{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-    padding:10px 0;
-
-    border-bottom:1px solid #eee;
-
-}
-
-label{
-
-    display:flex;
-
-    gap:10px;
-
-    align-items:center;
-
-}
-
-.feito{
-
-    text-decoration:line-through;
-
-    color:gray;
+    color:#35495e;
 
 }
 
@@ -246,7 +163,7 @@ label{
 
     border:none;
 
-    padding:8px 12px;
+    padding:10px 15px;
 
     border-radius:8px;
 
@@ -260,25 +177,91 @@ label{
 
 }
 
-.btnRemover{
+.nova{
 
-    background:transparent;
+    display:flex;
+
+    gap:10px;
+
+    margin-bottom:15px;
+
+}
+
+.nova input{
+
+    flex:1;
+
+    padding:12px;
+
+    border:1px solid #ccc;
+
+    border-radius:8px;
+
+    font-size:15px;
+
+}
+
+.nova button{
+
+    background:#42b883;
+
+    color:white;
 
     border:none;
 
+    padding:12px 20px;
+
+    border-radius:8px;
+
     cursor:pointer;
 
-    font-size:18px;
+}
+
+.nova button:hover{
+
+    background:#36996a;
 
 }
 
 .contador{
 
-    margin-bottom:10px;
+    margin-bottom:15px;
 
-    color:#666;
+    color:#555;
 
-    font-size:14px;
+    font-weight:bold;
+
+}
+
+ul{
+
+    list-style:none;
+
+    padding:0;
+
+}
+
+@media(max-width:700px){
+
+.cabecalho{
+
+    flex-direction:column;
+
+    gap:15px;
+
+}
+
+.nova{
+
+    flex-direction:column;
+
+}
+
+.nova button{
+
+    width:100%;
+
+}
 
 }
 
